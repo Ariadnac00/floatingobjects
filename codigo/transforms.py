@@ -1,7 +1,7 @@
 import numpy as np
 import torch
 import random
-from data import l2abands as bands
+from .data import l2abands as bands
 
 #from torchvision import transforms
 """
@@ -120,6 +120,7 @@ def get_data_augmentation(intensity):
                 image = image[idxs]
 
         mask = mask.squeeze(0)
+        mask = torch.Tensor(np.expand_dims(mask, axis=0))
         return image, mask
     return data_augmentation
 
