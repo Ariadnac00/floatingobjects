@@ -229,7 +229,7 @@ class FloatingSeaObjectRegionDataset(torch.utils.data.Dataset):
         # to distinguish them from actual labels
         hard_negative_mining_suffix = "-hnm" if line["is_hnm"] else ""
 
-        return image, mask, f"{self.region}-{index}" + hard_negative_mining_suffix
+        return image, mask#, f"{self.region}-{index}" + hard_negative_mining_suffix
 
 
 class FloatingSeaObjectDataset(torch.utils.data.ConcatDataset):
