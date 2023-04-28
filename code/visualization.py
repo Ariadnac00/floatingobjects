@@ -3,6 +3,7 @@ import numpy as np
 from skimage.exposure import equalize_hist
 from itertools import cycle
 from data import l2abands as bands
+import torch
 
 def calculate_fdi(scene):
     # tbd
@@ -33,20 +34,34 @@ def ndvi_transform(scene):
 def plot_batch(images, masks, y_preds):
     N = images.shape[0]
 
+
+    y_preds_exp = np.where(np.exp(y_preds) > 0.5, 1, 0)
+    y_preds_sig = np.where(torch.sigmoid(torch.tensor(y_preds)).detach().cpu().numpy() > 0.5, 1, 0)
+
     height = 3
     width = 3
-    fig, axs = plt.subplots(N, 5, figsize=(5 * width, N * height))
-    for axs_row, img, mask, y_pred in zip(axs, images, masks, y_preds):
-        axs_row[0].imshow(s2_to_RGB(img), cmap="magma")
+    fig, axs = plt.subplots(N, 6, figsize=(6 * width, N * height), squeeze=False)
+    for axs_row, img, mask, y_pred, y_pred_exp, y_pred_sig in zip(axs, images, masks, y_preds, y_preds_exp,
+                                                                  y_preds_sig):
+        axs_row[0].imshow(s2_to_RGB(img))
         axs_row[0].set_title("RGB")
         axs_row[1].imshow(ndvi_transform(img), cmap="viridis")
         axs_row[1].set_title("NDVI")
         axs_row[2].imshow(calculate_fdi(img), cmap="magma")
         axs_row[2].set_title("FDI")
-        axs_row[3].imshow(mask)
+        axs_row[3].imshow(mask[0, :, :], cmap='gray', vmin=0, vmax=1)
         axs_row[3].set_title("Mask")
-        axs_row[4].imshow(y_pred)
+        axs_row[4].imshow(y_pred, cmap='gray', vmin=0, vmax=1)
         axs_row[4].set_title("Prediction")
+        """
+        axs_row[5].imshow(y_pred_exp, cmap='gray', vmin=0, vmax=1)
+        axs_row[5].set_title("Exp > 0.5")
+        axs_row[6].imshow(y_pred_sig, cmap='gray', vmin=0, vmax=1)
+        axs_row[6].set_title("Sigmoid > 0.5")
+        """
+        axs_row[5].imshow(y_pred_exp, cmap='gray', vmin=0, vmax=1)
+        axs_row[5].set_title("Prediction")
+
         [ax.axis("off") for ax in axs_row]
     return fig
 
