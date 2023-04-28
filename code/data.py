@@ -217,10 +217,10 @@ class FloatingSeaObjectRegionDataset(torch.utils.data.Dataset):
         mask = mask.astype(float)
         image = image.astype(float)
 
+        image = np.nan_to_num(image)
+
         if self.transform is not None:
             image, mask = self.transform(image, mask)
-
-        image = np.nan_to_num(image)
 
         assert not np.isnan(image).any()
         assert not np.isnan(mask).any()

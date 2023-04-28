@@ -37,7 +37,7 @@ def get_transform(mode, intensity=0, add_fdi_ndvi=False):
 
             image *= 1e-4
             image = torch.Tensor(image)
-            mask = torch.Tensor(mask)
+            mask = torch.Tensor(np.expand_dims(mask, axis=0))
             return image, mask
         return test_transform
 
