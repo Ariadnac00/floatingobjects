@@ -2,7 +2,7 @@ import os
 import sys
 
 this_folder = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(this_folder, "..", "code"))
+sys.path.append(os.path.join(this_folder, "..", "codigo"))
 import numpy as np
 
 import unittest
