@@ -8,10 +8,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader, random_split
 from torch.optim import Adam
 from torch.utils.tensorboard import SummaryWriter
-from model import get_model
-from data import FloatingSeaObjectDataset
-from visualization import plot_batch
-from transforms import get_transform
+from .model import get_model
+from .data import FloatingSeaObjectDataset
+from .visualization import plot_batch
+from .transforms import get_transform
 import json
 from sklearn.metrics import precision_recall_fscore_support, cohen_kappa_score
 
@@ -161,7 +161,7 @@ def training_epoch(model, train_loader, optimizer, criterion, device):
     with tqdm(enumerate(train_loader), total=len(train_loader), leave=False) as pbar:
         for idx, batch in pbar:
             optimizer.zero_grad()
-            im, target, id = batch
+            im, target = batch
             im = im.to(device)
             target = target.to(device)
             y_pred = model(im)
@@ -186,7 +186,7 @@ def validating_epoch(model, val_loader, criterion, device):
         )
         with tqdm(enumerate(val_loader), total=len(val_loader), leave=False) as pbar:
             for idx, batch in pbar:
-                im, target, id = batch
+                im, target = batch
                 im = im.to(device)
                 target = target.to(device)
                 y_pred = model(im)
@@ -211,7 +211,7 @@ def validating_epoch(model, val_loader, criterion, device):
 
 
 def predict_images(val_loader, model, device):
-    images, masks, id = next(iter(val_loader))
+    images, masks = next(iter(val_loader))
     N = images.shape[0]
 
     # plot at most 5 images even if the batch size is larger
@@ -220,7 +220,7 @@ def predict_images(val_loader, model, device):
         masks = masks[:5]
 
     logits = model(images.to(device)).squeeze(1)
-    y_preds = torch.sigmoid(logits).detach().cpu().numpy()
+    y_preds = logits.detach().cpu().numpy()
     return plot_batch(images, masks, y_preds)
 
 
@@ -229,7 +229,7 @@ def get_scores(val_loader, model, device, n_batches=5):
     targets = []
     with torch.no_grad():
         for i in range(n_batches):
-            images, masks, id = next(iter(val_loader))
+            images, masks = next(iter(val_loader))
             logits = model(images.to(device)).squeeze(1)
             y_preds.append(torch.sigmoid(logits).detach().cpu().numpy())
             targets.append(masks.detach().cpu().numpy())

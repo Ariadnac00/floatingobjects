@@ -1,12 +1,12 @@
 import sys
 import os
-from data import FloatingSeaObjectDataset
-from visualization import plot_batch, calculate_fdi, ndvi_transform, s2_to_RGB, plot_curves
+from .data import FloatingSeaObjectDataset
+from .visualization import plot_batch, calculate_fdi, ndvi_transform, s2_to_RGB, plot_curves
 from train import predict_images
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from visualization import calculate_fdi, ndvi_transform
+from .visualization import calculate_fdi, ndvi_transform
 import torch
 import rasterio
 from tqdm.auto import tqdm as tq

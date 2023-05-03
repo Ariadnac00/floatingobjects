@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from skimage.exposure import equalize_hist
 from itertools import cycle
-from data import l2abands as bands
+from .data import l2abands as bands
 import torch
 
 def calculate_fdi(scene):
@@ -41,8 +41,7 @@ def plot_batch(images, masks, y_preds):
     height = 3
     width = 3
     fig, axs = plt.subplots(N, 6, figsize=(6 * width, N * height), squeeze=False)
-    for axs_row, img, mask, y_pred, y_pred_exp, y_pred_sig in zip(axs, images, masks, y_preds, y_preds_exp,
-                                                                  y_preds_sig):
+    for axs_row, img, mask, y_pred, y_pred_exp, y_pred_sig in zip(axs, images, masks, y_preds, y_preds_exp,y_preds_sig):
         axs_row[0].imshow(s2_to_RGB(img))
         axs_row[0].set_title("RGB")
         axs_row[1].imshow(ndvi_transform(img), cmap="viridis")
@@ -51,7 +50,7 @@ def plot_batch(images, masks, y_preds):
         axs_row[2].set_title("FDI")
         axs_row[3].imshow(mask[0, :, :], cmap='gray', vmin=0, vmax=1)
         axs_row[3].set_title("Mask")
-        axs_row[4].imshow(y_pred, cmap='gray', vmin=0, vmax=1)
+        axs_row[4].imshow(y_pred, cmap='gray', vmin=-1, vmax=2)
         axs_row[4].set_title("Prediction")
         """
         axs_row[5].imshow(y_pred_exp, cmap='gray', vmin=0, vmax=1)
@@ -60,7 +59,7 @@ def plot_batch(images, masks, y_preds):
         axs_row[6].set_title("Sigmoid > 0.5")
         """
         axs_row[5].imshow(y_pred_exp, cmap='gray', vmin=0, vmax=1)
-        axs_row[5].set_title("Prediction")
+        axs_row[5].set_title("Binary prediction")
 
         [ax.axis("off") for ax in axs_row]
     return fig
