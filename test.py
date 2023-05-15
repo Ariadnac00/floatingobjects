@@ -66,7 +66,9 @@ def test_model(model, test_set):
 ################ CAMBIAR FECHA #################
 ################################################
 
-path_save = '../floatingobjects/entrenos/2023_04_27_09_36/'
+path_save = 'entrenos/2023_05_12_09_35/'
+test_epoch = 'last_net.pt'
+#test_epoch = 'epoch20.pt'
 
 with open(f'{path_save}params.json') as json_file:
     params = json.load(json_file)
@@ -79,7 +81,7 @@ if params['Modelo'] == 'UNet':
 elif params['Modelo'] == 'deepUNet':
   model = get_deepUNet_model(params['Input channels'], params['Hidden channels'], params['Output channels'], params['BN'])
 
-model.load_state_dict(torch.load(path_save + 'last_net.pt', map_location=device))
+model.load_state_dict(torch.load(path_save + test_epoch, map_location=device))
 model.to(device)
 
 test_set = FloatingSeaObjectDataset('./data', fold="test",
@@ -97,8 +99,7 @@ for idx in tqdm(range(len(predicciones))):
     y_true.append(pix)
 
 class_report = classification_report(y_true, y_pred_exp, zero_division=0, output_dict=True)
-print(class_report)
-metrics = {'Path save': params["Path save"],
+metrics = {'Path save': params["Path save"] + '/' + test_epoch,
            'Water p': class_report['0.0']['precision'],
            'Water r': class_report['0.0']['recall'],
            'Water f1': class_report['0.0']['f1-score'],
@@ -129,4 +130,4 @@ test_loader = DataLoader(test_set, batch_size=5, shuffle=True)
 for i in range(5):
     fig = predict_images(test_loader, model, device)
     fig.suptitle(f'{params["Modelo"]}, {params["Input channels"]} in_channels, {params["Hidden channels"]} hidden channels, BN {params["BN"]}, {params["Loss"][0]} loss')
-    plt.savefig(f'{path_save}test{i+1}.png')
+    plt.savefig(f'{path_save}test{i+1}_{test_epoch[:-3]}.png')
